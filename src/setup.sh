@@ -4,8 +4,16 @@ confDir="$HOME/.serverlogger"
 confEmailFile="$HOME/.serverlogger/email"
 confWebappApiKeyIdFile="$HOME/.serverlogger/webappApiKeyId"
 
+response=""
+statusCode=""
+body=""
+
+cleanup () {
+  rm -rf "$curlContentDir"
+}
+
 callApi () {
-  curl \
+  response=$(curl \
   --silent \
   --verbose \
 	"https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/$1" \
@@ -15,11 +23,13 @@ callApi () {
 	-H "Cache-Control: no-cache" \
 	--data-raw "$3" \
 	--output "$curlContentDir/latest" \
-	2>&1
+	2>&1)
+	statusCode="$(getStatusCode "$response")"
+  body="$(getBody "$response")"
 }
 
 callApiWithWebappApiKey () {
-  curl \
+  response=$(curl \
   --silent \
   --verbose \
 	"https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/$1" \
@@ -30,7 +40,9 @@ callApiWithWebappApiKey () {
 	-H "X-Herodot-Webapp-Api-Key-Id: $3" \
 	--data-raw "$4" \
 	--output "$curlContentDir/latest" \
-	2>&1
+	2>&1)
+	statusCode="$(getStatusCode "$response")"
+  body="$(getBody "$response")"
 }
 
 getStatusCode () {
@@ -68,9 +80,7 @@ read -r -e password
 
 echo ""
 
-response="$(callApi users POST '{"email": "'"$email"'", "password": "'"$password"'"}' )"
-statusCode="$(getStatusCode "$response")"
-body="$(getBody "$response")"
+callApi users POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
 if [ "$statusCode" == "201" ]
 then
@@ -79,34 +89,102 @@ elif [ "$statusCode" == "400" ]
 then
   echo -n "Account with e-mail address '$email' already exists, logging in... "
 else
-  echo "Registration failed with status code $statusCode: $body"
+  echo "Registration failed with status code $statusCode:"
+  echo "$body"
+  cleanup
   exit 1
 fi
 
 
-response="$(callApi webapp-api-keys POST '{"email": "'"$email"'", "password": "'"$password"'"}' )"
-statusCode="$(getStatusCode "$response")"
-body="$(getBody "$response")"
+callApi webapp-api-keys POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
-if [ "$statusCode" == "201" ]
+if [ "$statusCode" != "201" ]
 then
+  echo "Login failed with status code $statusCode:"
+  echo "$body"
+  cleanup
+  exit 1
+else
   echo "done."
   echo ""
-  echo -n "Storing your credentials in $confEmailFile and $confWebappApiKeyIdFile... "
+  echo "Storing your credentials:"
 
   webappApiKeyId="${body//\"/}"
-  echo "$email" > "$confEmailFile"
-  echo "$webappApiKeyId" > "$confWebappApiKeyIdFile"
 
+  echo -n "  $confEmailFile... "
+  echo "$email" > "$confEmailFile"
+  echo "done"
+
+  echo -n "  $confWebappApiKeyIdFile... "
+  echo "$webappApiKeyId" > "$confWebappApiKeyIdFile"
   echo "done."
+
   echo ""
 
-  response="$(callApiWithWebappApiKey servers GET "$webappApiKeyId" '' )"
-  statusCode="$(getStatusCode "$response")"
-  body="$(getBody "$response")"
-  echo "$body"
-else
-  echo "Login failed with status code $statusCode: $body"
+  echo -n "Verifying API connection... "
+  callApiWithWebappApiKey servers GET "$webappApiKeyId" ''
+
+  if [ "$statusCode" == "200" ]
+  then
+    echo "done."
+    echo ""
+
+    if [ "$body" == "[]" ]
+    then
+      echo ""
+      echo "Let's now create your first server on ServerLogger.com."
+
+      serverTitle=""
+      while [ "$serverTitle" == "" ]
+      do
+        echo -n "Name of your server (default: '$(hostname | xargs)'): "
+        read -r -e serverTitle
+        serverTitle="$(echo $serverTitle | xargs)"
+
+        if [ "$serverTitle" == "" ]
+        then
+          serverTitle="$(hostname | xargs)"
+        fi
+
+        if [ "$serverTitle" == "" ]
+        then
+          echo "Invalid server name, please try again"
+          echo ""
+        fi
+      done
+
+      echo ""
+      echo -n "Ok, going to create server '$serverTitle'... "
+      callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
+
+      if [ "$statusCode" == "201" ]
+      then
+        echo "done."
+        echo ""
+
+        cleanedUpBody="$(echo "$body" | sed 's/{//g' | sed 's/}//g' | sed 's/"//g')"
+        serverId="$(echo "$cleanedUpBody" | cut -d ',' -f 1 | cut -d ':' -f 2)"
+        userId="$(echo "$cleanedUpBody" | cut -d ',' -f 2 | cut -d ':' -f 2)"
+        loggingApiKeyId="$(echo "$cleanedUpBody" | cut -d ',' -f 3 | cut -d ':' -f 2)"
+
+        echo "$serverId"
+        echo "$userId"
+        echo "$loggingApiKeyId"
+      else
+        echo "Server creation failed with status code $statusCode:"
+        echo "$body"
+        cleanup
+        exit 1
+      fi
+    fi
+
+  else
+    echo "error."
+    echo "API connection failed with status code $statusCode:"
+    echo "$body"
+    cleanup
+    exit 1
+  fi
 fi
 
-rm -rf "$curlContentDir"
+cleanup
