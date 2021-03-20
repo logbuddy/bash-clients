@@ -1,14 +1,26 @@
 #!/usr/bin/env bash
 
+scriptFolder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+source "$scriptFolder/includes/colors.sh"
+
 confDir="$HOME/.serverlogger"
 confEmailFile="$HOME/.serverlogger/email"
 confWebappApiKeyIdFile="$HOME/.serverlogger/webappApiKeyId"
+confLoggingApiKeyIdFile="$HOME/.serverlogger/loggingApiKeyId"
+confUserIdFile="$HOME/.serverlogger/userId"
+confServerIdFile="$HOME/.serverlogger/serverId"
 
 response=""
 statusCode=""
 body=""
 
+resetColor() {
+  echo -n -e "${RCol}"
+}
+
 cleanup () {
+  resetColor
   rm -rf "$curlContentDir"
 }
 
@@ -69,14 +81,33 @@ fi
 curlContentDir="$(mktemp -d)"
 
 echo ""
-echo "Welcome to the ServerLogger CLI setup."
+echo -e "${On_Gre}                                        ${RCol}"
+echo -e "${On_Gre}${BWhi} Welcome to the ServerLogger CLI setup. ${RCol}"
+echo -e "${On_Gre}                                        ${RCol}"
 echo ""
 
-echo -n "Your ServerLogger.com e-mail address: "
-read -r -e email
+echo -e "You first need to ${BWhi}register with us${RCol} or ${BWhi}log in${RCol}."
+echo ""
+echo "Simply enter your credentials - we will either create a new"
+echo "account for you or log you into your existing account."
+echo ""
 
-echo -n "Your ServerLogger.com password: "
-read -r -e password
+echo -n -e "Your ServerLogger.com ${BWhi}e-mail address${RCol}:${BPur}"
+read -r -e -p ' ' email
+resetColor
+
+echo -n -e "Your ServerLogger.com ${BWhi}password${RCol}: ${BPur}"
+unset password;
+while IFS= read -r -s -n1 pass; do
+  if [[ -z $pass ]]; then
+     echo
+     break
+  else
+     echo -n '*'
+     password+=$pass
+  fi
+done
+resetColor
 
 echo ""
 
@@ -84,13 +115,13 @@ callApi users POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
 if [ "$statusCode" == "201" ]
 then
-  echo -n "Successfully registered new account '$email', logging in... "
+  echo -n -e "Successfully registered new account ${BPur}$email${RCol}, logging in... "
 elif [ "$statusCode" == "400" ]
 then
-  echo -n "Account with e-mail address '$email' already exists, logging in... "
+  echo -n -e "Account with e-mail address ${BPur}$email${RCol} already exists, logging in... "
 else
-  echo "Registration failed with status code $statusCode:"
-  echo "$body"
+  echo -e "Registration failed with status code ${BRed}$statusCode${RCol}:"
+  echo -e "${BYel}$body${RCol}"
   cleanup
   exit 1
 fi
@@ -100,12 +131,13 @@ callApi webapp-api-keys POST '{"email": "'"$email"'", "password": "'"$password"'
 
 if [ "$statusCode" != "201" ]
 then
-  echo "Login failed with status code $statusCode:"
-  echo "$body"
+  echo -e "${BRed}failure${RCol}"
+  echo -e "Login failed with status code ${BRed}$statusCode${RCol}:"
+  echo -e "${BYel}$body${RCol}"
   cleanup
   exit 1
 else
-  echo "done."
+  echo -e "${BGre}success${RCol}"
   echo ""
   echo "Storing your credentials:"
 
@@ -113,11 +145,11 @@ else
 
   echo -n "  $confEmailFile... "
   echo "$email" > "$confEmailFile"
-  echo "done"
+  echo -e "${BGre}success${RCol}"
 
   echo -n "  $confWebappApiKeyIdFile... "
   echo "$webappApiKeyId" > "$confWebappApiKeyIdFile"
-  echo "done."
+  echo -e "${BGre}success${RCol}"
 
   echo ""
 
@@ -126,19 +158,19 @@ else
 
   if [ "$statusCode" == "200" ]
   then
-    echo "done."
+    echo -e "${BGre}success${RCol}"
     echo ""
 
     if [ "$body" == "[]" ]
     then
-      echo ""
-      echo "Let's now create your first server on ServerLogger.com."
+      echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on ServerLogger.com."
 
       serverTitle=""
       while [ "$serverTitle" == "" ]
       do
-        echo -n "Name of your server (default: '$(hostname | xargs)'): "
-        read -r -e serverTitle
+        echo -n -e "${BWhi}Name of your server${RCol} (default: '${BPur}$(hostname | xargs)${RCol}'):${BPur}"
+        read -r -e -p ' ' serverTitle
+        resetColor
         serverTitle="$(echo $serverTitle | xargs)"
 
         if [ "$serverTitle" == "" ]
@@ -148,18 +180,18 @@ else
 
         if [ "$serverTitle" == "" ]
         then
-          echo "Invalid server name, please try again"
+          echo -e "${BYel}Invalid server name, please try again.${RCol}"
           echo ""
         fi
       done
 
       echo ""
-      echo -n "Ok, going to create server '$serverTitle'... "
+      echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on ServerLogger.com... "
       callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
 
       if [ "$statusCode" == "201" ]
       then
-        echo "done."
+        echo -e "${BGre}success${RCol}"
         echo ""
 
         cleanedUpBody="$(echo "$body" | sed 's/{//g' | sed 's/}//g' | sed 's/"//g')"
@@ -167,21 +199,34 @@ else
         userId="$(echo "$cleanedUpBody" | cut -d ',' -f 2 | cut -d ':' -f 2)"
         loggingApiKeyId="$(echo "$cleanedUpBody" | cut -d ',' -f 3 | cut -d ':' -f 2)"
 
-        echo "$serverId"
-        echo "$userId"
-        echo "$loggingApiKeyId"
+        echo "Storing your server credentials:"
+
+        echo -n "  $confUserIdFile... "
+        echo "$userId" > "$confUserIdFile"
+        echo -e "${BGre}success${RCol}"
+
+        echo -n "  $confServerIdFile... "
+        echo "$serverId" > "$confServerIdFile"
+        echo -e "${BGre}success${RCol}"
+
+        echo -n "  $confLoggingApiKeyIdFile... "
+        echo "$loggingApiKeyId" > "$confLoggingApiKeyIdFile"
+        echo -e "${BGre}success${RCol}"
+
+        echo ""
       else
-        echo "Server creation failed with status code $statusCode:"
-        echo "$body"
+        echo -e "${BRed}failure${RCol}"
+        echo -e "Server creation failed with status code ${BRed}$statusCode${RCol}:"
+        echo -e "${BYel}$body${RCol}"
         cleanup
         exit 1
       fi
     fi
 
   else
-    echo "error."
-    echo "API connection failed with status code $statusCode:"
-    echo "$body"
+    echo -e "${BRed}failure${RCol}"
+    echo -e "API connection failed with status code ${BRed}$statusCode${RCol}:"
+    echo -e "${BYel}$body${RCol}"
     cleanup
     exit 1
   fi
