@@ -156,79 +156,80 @@ else
   echo -n "Verifying API connection... "
   callApiWithWebappApiKey servers GET "$webappApiKeyId" ''
 
-  if [ "$statusCode" == "200" ]
+  if [ ! "$statusCode" == "200" ]
   then
+    echo -e "${BRed}failure${RCol}"
+    echo -e "API connection failed with status code ${BRed}$statusCode${RCol}:"
+    echo -e "${BYel}$body${RCol}"
+    cleanup
+    exit 1
+  else
     echo -e "${BGre}success${RCol}"
     echo ""
 
     if [ "$body" == "[]" ]
     then
       echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on ServerLogger.com."
-
-      serverTitle=""
-      while [ "$serverTitle" == "" ]
-      do
-        echo -n -e "${BWhi}Name of your server${RCol} (default: '${BPur}$(hostname | xargs)${RCol}'):${BPur}"
-        read -r -e -p ' ' serverTitle
-        resetColor
-        serverTitle="$(echo $serverTitle | xargs)"
-
-        if [ "$serverTitle" == "" ]
-        then
-          serverTitle="$(hostname | xargs)"
-        fi
-
-        if [ "$serverTitle" == "" ]
-        then
-          echo -e "${BYel}Invalid server name, please try again.${RCol}"
-          echo ""
-        fi
-      done
-
-      echo ""
-      echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on ServerLogger.com... "
-      callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
-
-      if [ "$statusCode" == "201" ]
-      then
-        echo -e "${BGre}success${RCol}"
-        echo ""
-
-        cleanedUpBody="$(echo "$body" | sed 's/{//g' | sed 's/}//g' | sed 's/"//g')"
-        serverId="$(echo "$cleanedUpBody" | cut -d ',' -f 1 | cut -d ':' -f 2)"
-        userId="$(echo "$cleanedUpBody" | cut -d ',' -f 2 | cut -d ':' -f 2)"
-        loggingApiKeyId="$(echo "$cleanedUpBody" | cut -d ',' -f 3 | cut -d ':' -f 2)"
-
-        echo "Storing your server credentials:"
-
-        echo -n "  $confUserIdFile... "
-        echo "$userId" > "$confUserIdFile"
-        echo -e "${BGre}success${RCol}"
-
-        echo -n "  $confServerIdFile... "
-        echo "$serverId" > "$confServerIdFile"
-        echo -e "${BGre}success${RCol}"
-
-        echo -n "  $confLoggingApiKeyIdFile... "
-        echo "$loggingApiKeyId" > "$confLoggingApiKeyIdFile"
-        echo -e "${BGre}success${RCol}"
-
-        echo ""
-      else
-        echo -e "${BRed}failure${RCol}"
-        echo -e "Server creation failed with status code ${BRed}$statusCode${RCol}:"
-        echo -e "${BYel}$body${RCol}"
-        cleanup
-        exit 1
-      fi
+    else
+      echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on ServerLogger.com."
     fi
 
-  else
-    echo -e "${BRed}failure${RCol}"
-    echo -e "API connection failed with status code ${BRed}$statusCode${RCol}:"
-    echo -e "${BYel}$body${RCol}"
-    cleanup
-    exit 1
+    serverTitle=""
+    while [ "$serverTitle" == "" ]
+    do
+      echo -n -e "${BWhi}Name of your server${RCol} (default: '${BPur}$(hostname | xargs)${RCol}'):${BPur}"
+      read -r -e -p ' ' serverTitle
+      resetColor
+      serverTitle="$(echo $serverTitle | xargs)"
+
+      if [ "$serverTitle" == "" ]
+      then
+        serverTitle="$(hostname | xargs)"
+      fi
+
+      if [ "$serverTitle" == "" ]
+      then
+        echo -e "${BYel}Invalid server name, please try again.${RCol}"
+        echo ""
+      fi
+    done
+
+    echo ""
+    echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on ServerLogger.com... "
+    callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
+
+    if [ "$statusCode" == "201" ]
+    then
+      echo -e "${BGre}success${RCol}"
+      echo ""
+
+      cleanedUpBody="$(echo "$body" | sed 's/{//g' | sed 's/}//g' | sed 's/"//g')"
+      serverId="$(echo "$cleanedUpBody" | cut -d ',' -f 1 | cut -d ':' -f 2)"
+      userId="$(echo "$cleanedUpBody" | cut -d ',' -f 2 | cut -d ':' -f 2)"
+      loggingApiKeyId="$(echo "$cleanedUpBody" | cut -d ',' -f 3 | cut -d ':' -f 2)"
+
+      echo "Storing your server credentials:"
+
+      echo -n "  $confUserIdFile... "
+      echo "$userId" > "$confUserIdFile"
+      echo -e "${BGre}success${RCol}"
+
+      echo -n "  $confServerIdFile... "
+      echo "$serverId" > "$confServerIdFile"
+      echo -e "${BGre}success${RCol}"
+
+      echo -n "  $confLoggingApiKeyIdFile... "
+      echo "$loggingApiKeyId" > "$confLoggingApiKeyIdFile"
+      echo -e "${BGre}success${RCol}"
+
+      echo ""
+    else
+      echo -e "${BRed}failure${RCol}"
+      echo -e "Server creation failed with status code ${BRed}$statusCode${RCol}:"
+      echo -e "${BYel}$body${RCol}"
+      cleanup
+      exit 1
+    fi
   fi
 fi
 
