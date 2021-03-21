@@ -2,13 +2,24 @@
 
 trap "kill 0" SIGINT
 
+scriptFolder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+source "$scriptFolder/includes/colors.sh"
+
+
+defaultSource="$(hostname)"
+defaultUserId="$(cat "$HOME/.serverlogger/userId")"
+defaultServerId="$(cat "$HOME/.serverlogger/serverId")"
+defaultUserId="$(cat "$HOME/.serverlogger/userId")"
+defaultLoggingApiKeyId="$(cat "$HOME/.serverlogger/loggingApiKeyId")"
+
 filePath="$1"
-source="$2"
-userId="$3"
-serverId="$4"
-apiKeyId="$5"
-bufferSize="$6"
-controlTimeout="$7"
+source="${2:-$defaultSource}"
+userId="${3:-$defaultUserId}"
+serverId="${4:-$defaultServerId}"
+loggingApiKeyId="${5:-$defaultLoggingApiKeyId}"
+bufferSize="${6:-100}"
+controlTimeout="${5:-10}"
 grepFilter="$8"
 
 controlFilePath="$(mktemp)"
@@ -31,6 +42,9 @@ while true; do
   sleep "$controlTimeout"
   echo "$controlFileLine" >> "$controlFilePath"
 done &
+
+
+echo -e "Streaming new contents in ${BPur}$filePath${RCol} to ServerLogger.com..."
 
 tail -n0 -F -q "$filePath" "$controlFilePath" | while read -r line; do
 
@@ -75,7 +89,7 @@ $eventString"
         "https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/server-events" \
         -d '{ "userId":   "'"$userId"'",
               "serverId": "'"$serverId"'",
-              "apiKeyId": "'"$apiKeyId"'",
+              "apiKeyId": "'"$loggingApiKeyId"'",
               "events":   ['"$eventsString"']}'
 
         i=0
