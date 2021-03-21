@@ -7,6 +7,7 @@ pushd "$HOME/bin/serverlogger/bash-clients/includes" >/dev/null || exit 1
   pushd .. >/dev/null || exit 1
     curl --silent -O https://raw.githubusercontent.com/serverlogger/bash-clients/main/src/setup.sh
     curl --silent -O https://raw.githubusercontent.com/serverlogger/bash-clients/main/src/streamfile.sh
+    chmod 0755 ./*.sh
   popd >/dev/null || exit 1
 popd >/dev/null || exit 1
 

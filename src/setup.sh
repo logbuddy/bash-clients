@@ -253,7 +253,13 @@ else
       echo "You can now visit your server overview page here:"
       echo ""
       echo -e "${UWhi}${BWhi}https://poc.serverlogger.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
+
       echo ""
+      echo "Start streaming your first log file to ServerLogger.com with our streamfile helper:"
+      echo ""
+      echo "~/bin/serverlogger/bash-clients/${BWhi}streamfile.sh${RCol} ${BPur}/your/log/file${RCol}"
+      echo ""
+
     else
       echo -e "${BRed}failure${RCol}"
       echo -e "Server creation failed with status code ${BRed}$statusCode${RCol}:"
