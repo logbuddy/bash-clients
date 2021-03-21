@@ -173,6 +173,7 @@ else
     else
       echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on ServerLogger.com."
     fi
+    echo ""
 
     serverTitle=""
     while [ "$serverTitle" == "" ]
@@ -222,6 +223,36 @@ else
       echo "$loggingApiKeyId" > "$confLoggingApiKeyIdFile"
       echo -e "${BGre}success${RCol}"
 
+      echo ""
+
+      echo -n "We will now send a first test log message to ServerLogger.com... "
+
+      requestBody='
+        { "userId": "'"$userId"'",
+          "serverId": "'"$serverId"'",
+          "apiKeyId": "'"$loggingApiKeyId"'",
+          "events": [{"createdAt": "'"$(date +"%Y-%m-%dT%H:%M:%S%z")"'",
+                      "source": "ServerLogger setup script",
+                      "payload": "A first test log message"
+                    }]
+        }
+      '
+      requestBody=$(echo "$requestBody" | tr '\n' ' ')
+      callApi server-events POST "$requestBody"
+
+      if [ ! "$statusCode" == "201" ]
+      then
+        echo -e "${BRed}failure${RCol}"
+        echo -e "Sending first test log message failed with status code ${BRed}$statusCode${RCol}:"
+        echo -e "${BYel}$body${RCol}"
+      else
+        echo -e "${BGre}success${RCol}"
+      fi
+
+      echo ""
+      echo "You can now visit your server overview page here:"
+      echo ""
+      echo -e "${UWhi}${BWhi}https://poc.serverlogger.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
       echo ""
     else
       echo -e "${BRed}failure${RCol}"
