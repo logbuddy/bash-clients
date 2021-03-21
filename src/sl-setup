@@ -111,14 +111,18 @@ resetColor
 
 echo ""
 
+echo -n -e "Checking credentials... "
+
 callApi users POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
 if [ "$statusCode" == "201" ]
 then
-  echo -n -e "Successfully registered new account ${BPur}$email${RCol}, logging in... "
+  echo -e "${BGre}success${RCol}"
+  echo -e "Successfully registered new account ${BPur}$email${RCol}."
 elif [ "$statusCode" == "400" ]
 then
-  echo -n -e "Account with e-mail address ${BPur}$email${RCol} already exists, logging in... "
+  echo -e "${BGre}success${RCol}"
+  echo -e "Account with e-mail address ${BPur}$email${RCol} already exists."
 else
   echo -e "Registration failed with status code ${BRed}$statusCode${RCol}:"
   echo -e "${BYel}$body${RCol}"
@@ -126,6 +130,8 @@ else
   exit 1
 fi
 
+echo ""
+echo -n -e "Logging in... "
 
 callApi webapp-api-keys POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
@@ -250,14 +256,24 @@ else
       fi
 
       echo ""
+      echo ""
       echo "You can now visit your server overview page here:"
       echo ""
       echo -e "${UWhi}${BWhi}https://poc.serverlogger.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
 
       echo ""
+      echo ""
       echo "Start streaming your first log file to ServerLogger.com with our streamfile helper:"
       echo ""
-      echo "~/bin/serverlogger/bash-clients/${BWhi}streamfile.sh${RCol} ${BPur}/your/log/file${RCol}"
+      echo -e "~/bin/serverlogger/bash-clients/${BWhi}sl-streamfile${RCol} ${BPur}/your/log/file${RCol}"
+      echo ""
+
+      echo ""
+      echo ""
+      echo -e "Put the following into your shell init files to add ${BWhi}sl-streamfile${RCol} to your path:"
+      echo ""
+      echo -e "${BWhi}export${RCol} PATH=${BPur}\$HOME/bin/serverlogger/bash-clients${RCol}:\$PATH"
+
       echo ""
 
     else
