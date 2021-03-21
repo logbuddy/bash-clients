@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-mkdir -p "$HOME/serverlogger/bash-clients/includes"
+mkdir -p "$HOME/bin/serverlogger/bash-clients/includes"
 
-pushd "$HOME/serverlogger/bash-clients/includes" || exit 1
+pushd "$HOME/bin/serverlogger/bash-clients/includes" || exit 1
   curl --silent -O https://raw.githubusercontent.com/serverlogger/bash-clients/main/src/includes/colors.sh
   pushd .. || exit 1
     curl --silent -O https://raw.githubusercontent.com/serverlogger/bash-clients/main/src/setup.sh
@@ -10,4 +10,4 @@ pushd "$HOME/serverlogger/bash-clients/includes" || exit 1
   popd
 popd || exit 1
 
-/usr/bin/env bash "$HOME/serverlogger/bash-clients/setup.sh"
+/usr/bin/env bash "$HOME/bin/serverlogger/bash-clients/setup.sh"
