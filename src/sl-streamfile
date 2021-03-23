@@ -71,8 +71,8 @@ tail -n0 -F -q "$filePath" "$controlFilePath" | while read -r line; do
     j=0
     for eventString in "${eventsBuffer[@]}"
     do
-	    if [ "$j" == 0 ]
-	    then
+      if [ "$j" == 0 ]
+      then
         eventsString="$eventString"
       else
         eventsString="$eventsString,
