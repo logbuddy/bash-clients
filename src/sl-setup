@@ -58,7 +58,7 @@ callApiWithWebappApiKey () {
 }
 
 getStatusCode () {
-  echo "$1" | grep "< HTTP/2 " | cut -d " " -f 3
+  echo "$1" | grep "< HTTP/" | cut -d " " -f 3
 }
 
 getBody () {
