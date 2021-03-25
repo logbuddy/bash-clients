@@ -1,7 +1,7 @@
 # ServerLogger bash clients
 
-# Installation and setup
+## Installation and setup
 
 Simply run:
 
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/serverlogger/bash-clients/main/src/sl-install)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/sl-install)"

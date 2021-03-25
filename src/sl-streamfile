@@ -8,10 +8,10 @@ source "$scriptFolder/includes/colors.sh"
 
 
 defaultSource="$(hostname)"
-defaultUserId="$(cat "$HOME/.serverlogger/userId")"
-defaultServerId="$(cat "$HOME/.serverlogger/serverId")"
-defaultUserId="$(cat "$HOME/.serverlogger/userId")"
-defaultLoggingApiKeyId="$(cat "$HOME/.serverlogger/loggingApiKeyId")"
+defaultUserId="$(cat "$HOME/.logbuddy/userId")"
+defaultServerId="$(cat "$HOME/.logbuddy/serverId")"
+defaultUserId="$(cat "$HOME/.logbuddy/userId")"
+defaultLoggingApiKeyId="$(cat "$HOME/.logbuddy/loggingApiKeyId")"
 
 filePath="$1"
 source="${2:-$defaultSource}"
@@ -23,7 +23,7 @@ controlTimeout="${5:-10}"
 grepFilter="$8"
 
 controlFilePath="$(mktemp)"
-controlFileLine="--- ServerLogger.com streamfile.sh control file entry ---"
+controlFileLine="--- LogBuddy.com streamfile.sh control file entry ---"
 
 source="${source:0:256}"
 
@@ -44,7 +44,7 @@ while true; do
 done &
 
 
-echo -e "Streaming new contents in ${BPur}$filePath${RCol} to ServerLogger.com..."
+echo -e "Streaming new contents in ${BPur}$filePath${RCol} to LogBuddy.com..."
 
 tail -n0 -F -q "$filePath" "$controlFilePath" | while read -r line; do
 

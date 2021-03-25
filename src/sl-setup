@@ -4,12 +4,12 @@ scriptFolder="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$scriptFolder/includes/colors.sh"
 
-confDir="$HOME/.serverlogger"
-confEmailFile="$HOME/.serverlogger/email"
-confWebappApiKeyIdFile="$HOME/.serverlogger/webappApiKeyId"
-confLoggingApiKeyIdFile="$HOME/.serverlogger/loggingApiKeyId"
-confUserIdFile="$HOME/.serverlogger/userId"
-confServerIdFile="$HOME/.serverlogger/serverId"
+confDir="$HOME/.logbuddy"
+confEmailFile="$HOME/.logbuddy/email"
+confWebappApiKeyIdFile="$HOME/.logbuddy/webappApiKeyId"
+confLoggingApiKeyIdFile="$HOME/.logbuddy/loggingApiKeyId"
+confUserIdFile="$HOME/.logbuddy/userId"
+confServerIdFile="$HOME/.logbuddy/serverId"
 
 response=""
 statusCode=""
@@ -82,7 +82,7 @@ curlContentDir="$(mktemp -d)"
 
 echo ""
 echo -e "${On_Gre}                                        ${RCol}"
-echo -e "${On_Gre}${BWhi} Welcome to the ServerLogger CLI setup. ${RCol}"
+echo -e "${On_Gre}${BWhi} Welcome to the LogBuddy CLI setup. ${RCol}"
 echo -e "${On_Gre}                                        ${RCol}"
 echo ""
 
@@ -92,11 +92,11 @@ echo "Simply enter your credentials - we will either create a new"
 echo "account for you or log you into your existing account."
 echo ""
 
-echo -n -e "Your ServerLogger.com ${BWhi}e-mail address${RCol}:${BPur}"
+echo -n -e "Your LogBuddy.com ${BWhi}e-mail address${RCol}:${BPur}"
 read -r -e -p ' ' email
 resetColor
 
-echo -n -e "Your ServerLogger.com ${BWhi}password${RCol}: ${BPur}"
+echo -n -e "Your LogBuddy.com ${BWhi}password${RCol}: ${BPur}"
 unset password;
 while IFS= read -r -s -n1 pass; do
   if [[ -z $pass ]]; then
@@ -175,9 +175,9 @@ else
 
     if [ "$body" == "[]" ]
     then
-      echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on ServerLogger.com."
+      echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on LogBuddy.com."
     else
-      echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on ServerLogger.com."
+      echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on LogBuddy.com."
     fi
     echo ""
 
@@ -202,7 +202,7 @@ else
     done
 
     echo ""
-    echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on ServerLogger.com... "
+    echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on LogBuddy.com... "
     callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
 
     if [ "$statusCode" == "201" ]
@@ -231,14 +231,14 @@ else
 
       echo ""
 
-      echo -n "We will now send a first test log message to ServerLogger.com... "
+      echo -n "We will now send a first test log message to LogBuddy.com... "
 
       requestBody='
         { "userId": "'"$userId"'",
           "serverId": "'"$serverId"'",
           "apiKeyId": "'"$loggingApiKeyId"'",
           "events": [{"createdAt": "'"$(date +"%Y-%m-%dT%H:%M:%S%z")"'",
-                      "source": "ServerLogger setup script",
+                      "source": "LogBuddy setup script",
                       "payload": "A first test log message"
                     }]
         }
@@ -259,20 +259,20 @@ else
       echo ""
       echo "You can now visit your server overview page here:"
       echo ""
-      echo -e "${UWhi}${BWhi}https://poc.serverlogger.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
+      echo -e "${UWhi}${BWhi}https://poc.logbuddy.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
 
       echo ""
       echo ""
-      echo "Start streaming your first log file to ServerLogger.com with our streamfile helper:"
+      echo "Start streaming your first log file to LogBuddy.com with our streamfile helper:"
       echo ""
-      echo -e "~/bin/serverlogger/bash-clients/${BWhi}sl-streamfile${RCol} ${BPur}/your/log/file${RCol}"
+      echo -e "~/bin/logbuddy/bash-clients/${BWhi}sl-streamfile${RCol} ${BPur}/your/log/file${RCol}"
       echo ""
 
       echo ""
       echo ""
       echo -e "Put the following into your shell init files to add ${BWhi}sl-streamfile${RCol} to your path:"
       echo ""
-      echo -e "${BWhi}export${RCol} PATH=${BPur}\$HOME/bin/serverlogger/bash-clients${RCol}:\$PATH"
+      echo -e "${BWhi}export${RCol} PATH=${BPur}\$HOME/bin/logbuddy/bash-clients${RCol}:\$PATH"
 
       echo ""
 
