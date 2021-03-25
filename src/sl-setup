@@ -259,7 +259,7 @@ else
       echo ""
       echo "You can now visit your server overview page here:"
       echo ""
-      echo -e "${UWhi}${BWhi}https://poc.logbuddy.com/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
+      echo -e "${UWhi}${BWhi}https://app.logbuddy.io/?directLoginEmail=${email}&directLoginWebappApiKeyId=${webappApiKeyId}#/servers/${RCol}"
 
       echo ""
       echo ""
