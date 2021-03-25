@@ -81,9 +81,9 @@ fi
 curlContentDir="$(mktemp -d)"
 
 echo ""
-echo -e "${On_Gre}                                        ${RCol}"
-echo -e "${On_Gre}${BWhi} Welcome to the LogBuddy CLI setup. ${RCol}"
-echo -e "${On_Gre}                                        ${RCol}"
+echo -e "${On_Gre}                                      ${RCol}"
+echo -e "${On_Gre}${BWhi}  Welcome to the LogBuddy CLI setup.  ${RCol}"
+echo -e "${On_Gre}                                      ${RCol}"
 echo ""
 
 echo -e "You first need to ${BWhi}register with us${RCol} or ${BWhi}log in${RCol}."
