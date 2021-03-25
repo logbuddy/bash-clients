@@ -4,4 +4,4 @@
 
 Simply run:
 
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/sl-install)"
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/sl-install)"
