@@ -92,11 +92,11 @@ echo "Simply enter your credentials - we will either create a new"
 echo "account for you or log you into your existing account."
 echo ""
 
-echo -n -e "Your LogBuddy.com ${BWhi}e-mail address${RCol}:${BPur}"
+echo -n -e "Your LogBuddy.io ${BWhi}e-mail address${RCol}:${BPur}"
 read -r -e -p ' ' email
 resetColor
 
-echo -n -e "Your LogBuddy.com ${BWhi}password${RCol}: ${BPur}"
+echo -n -e "Your LogBuddy.io ${BWhi}password${RCol}: ${BPur}"
 unset password;
 while IFS= read -r -s -n1 pass; do
   if [[ -z $pass ]]; then
@@ -175,9 +175,9 @@ else
 
     if [ "$body" == "[]" ]
     then
-      echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on LogBuddy.com."
+      echo -e "Let's now register this machine as ${BWhi}your first server${RCol} on LogBuddy.io."
     else
-      echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on LogBuddy.com."
+      echo -e "Let's now register this machine as ${BWhi}as an additional server${RCol} on LogBuddy.io."
     fi
     echo ""
 
@@ -202,7 +202,7 @@ else
     done
 
     echo ""
-    echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on LogBuddy.com... "
+    echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on LogBuddy.io... "
     callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
 
     if [ "$statusCode" == "201" ]
@@ -231,7 +231,7 @@ else
 
       echo ""
 
-      echo -n "We will now send a first test log message to LogBuddy.com... "
+      echo -n "We will now send a first test log message to LogBuddy.io... "
 
       requestBody='
         { "userId": "'"$userId"'",
@@ -263,7 +263,7 @@ else
 
       echo ""
       echo ""
-      echo "Start streaming your first log file to LogBuddy.com with our streamfile helper:"
+      echo "Start streaming your first log file to LogBuddy.io with our streamfile helper:"
       echo ""
       echo -e "~/bin/logbuddy/bash-clients/${BWhi}sl-streamfile${RCol} ${BPur}/your/log/file${RCol}"
       echo ""
