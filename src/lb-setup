@@ -265,12 +265,12 @@ else
       echo ""
       echo "Start streaming your first log file to LogBuddy.io with our streamfile helper:"
       echo ""
-      echo -e "~/bin/logbuddy/bash-clients/${BWhi}sl-streamfile${RCol} ${BPur}/your/log/file${RCol}"
+      echo -e "~/bin/logbuddy/bash-clients/${BWhi}lb-streamfile${RCol} ${BPur}/your/log/file${RCol}"
       echo ""
 
       echo ""
       echo ""
-      echo -e "Put the following into your shell init files to add ${BWhi}sl-streamfile${RCol} to your path:"
+      echo -e "Put the following into your shell init files to add ${BWhi}lb-streamfile${RCol} to your path:"
       echo ""
       echo -e "${BWhi}export${RCol} PATH=${BPur}\$HOME/bin/logbuddy/bash-clients${RCol}:\$PATH"
 

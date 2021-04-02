@@ -5,10 +5,10 @@ mkdir -p "$HOME/bin/logbuddy/bash-clients/includes"
 pushd "$HOME/bin/logbuddy/bash-clients/includes" >/dev/null || exit 1
   curl --silent -O https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/includes/colors.sh
   pushd .. >/dev/null || exit 1
-    curl --silent -O https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/sl-setup
-    curl --silent -O https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/sl-streamfile
-    chmod 0755 ./sl-*
+    curl --silent -O https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/lb-setup
+    curl --silent -O https://raw.githubusercontent.com/logbuddy/bash-clients/main/src/lb-streamfile
+    chmod 0755 ./lb-*
   popd >/dev/null || exit 1
 popd >/dev/null || exit 1
 
-/usr/bin/env bash "$HOME/bin/logbuddy/bash-clients/sl-setup"
+/usr/bin/env bash "$HOME/bin/logbuddy/bash-clients/lb-setup"
