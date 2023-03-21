@@ -28,7 +28,7 @@ callApi () {
   response=$(curl \
   --silent \
   --verbose \
-	"https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/$1" \
+	"https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/$1" \
 	-X "$2" \
 	-H "Content-Type: application/json" \
 	-H "Pragma: no-cache" \
@@ -44,7 +44,7 @@ callApiWithWebappApiKey () {
   response=$(curl \
   --silent \
   --verbose \
-	"https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/$1" \
+	"https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/$1" \
 	-X "$2" \
 	-H "Content-Type: application/json" \
 	-H "Pragma: no-cache" \
@@ -113,7 +113,7 @@ echo ""
 
 echo -n -e "Checking credentials... "
 
-callApi users POST '{"email": "'"$email"'", "password": "'"$password"'"}'
+callApi users/ POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
 if [ "$statusCode" == "201" ]
 then
@@ -133,7 +133,7 @@ fi
 echo ""
 echo -n -e "Logging in... "
 
-callApi webapp-api-keys POST '{"email": "'"$email"'", "password": "'"$password"'"}'
+callApi webapp-api-keys/ POST '{"email": "'"$email"'", "password": "'"$password"'"}'
 
 if [ "$statusCode" != "201" ]
 then
@@ -160,7 +160,7 @@ else
   echo ""
 
   echo -n "Verifying API connection... "
-  callApiWithWebappApiKey servers GET "$webappApiKeyId" ''
+  callApiWithWebappApiKey servers/ GET "$webappApiKeyId" ''
 
   if [ ! "$statusCode" == "200" ]
   then
@@ -203,7 +203,7 @@ else
 
     echo ""
     echo -n -e "Ok, going to create server ${BPur}$serverTitle${RCol} on LogBuddy.io... "
-    callApiWithWebappApiKey servers POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
+    callApiWithWebappApiKey servers/ POST "$webappApiKeyId" '{ "title": "'"$serverTitle"'" }'
 
     if [ "$statusCode" == "201" ]
     then

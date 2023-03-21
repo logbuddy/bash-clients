@@ -87,7 +87,7 @@ $eventString"
       echo "$eventsString"
       curl \
         -X POST \
-        "https://rs213s9yml.execute-api.eu-central-1.amazonaws.com/server-events" \
+        "https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/server-events" \
         -d '{ "userId":   "'"$userId"'",
               "serverId": "'"$serverId"'",
               "apiKeyId": "'"$loggingApiKeyId"'",
