@@ -63,7 +63,7 @@ tail -n0 -F -q "$filePath" "$controlFilePath" | while read -r line; do
 
   if [ "$line" != "$controlFileLine" ]
   then
-    eventsBuffer[${#eventsBuffer[@]}]='{"source":"'"$source"'", "createdAt":"'"$(date +"%Y-%m-%dT%H:%M:%S%z")"'", "payload":"'"$(echo $line | sed "s/\"/\\\\\"/g")"'"}'
+    eventsBuffer[${#eventsBuffer[@]}]='{"source":"'"$source"'", "createdAt":"'"$(date +"%Y-%m-%dT%H:%M:%S%z")"'", "payload":"'"$(echo "$line" | sed "s/\"/\\\\\"/g")"'"}'
   fi
 
   if [ "$i" = "$bufferSize" ] || [ "$line" = "$controlFileLine" ]
