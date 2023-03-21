@@ -87,7 +87,7 @@ $eventString"
       echo "$eventsString"
       curl \
         -X POST \
-        "https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/server-events" \
+        "https://app.logbuddy.io/api/server-events" \
         -d '{ "userId":   "'"$userId"'",
               "serverId": "'"$serverId"'",
               "apiKeyId": "'"$loggingApiKeyId"'",

@@ -28,7 +28,7 @@ callApi () {
   response=$(curl \
   --silent \
   --verbose \
-	"https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/$1" \
+	"https://app.logbuddy.io/api/$1" \
 	-X "$2" \
 	-H "Content-Type: application/json" \
 	-H "Pragma: no-cache" \
@@ -44,7 +44,7 @@ callApiWithWebappApiKey () {
   response=$(curl \
   --silent \
   --verbose \
-	"https://ggu7nltqa6.execute-api.us-west-1.amazonaws.com/api/$1" \
+	"https://app.logbuddy.io/api/$1" \
 	-X "$2" \
 	-H "Content-Type: application/json" \
 	-H "Pragma: no-cache" \
